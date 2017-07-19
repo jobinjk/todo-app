@@ -1,0 +1,167 @@
+{% include "head.html" %}
+<body ng-controller="MainController">
+{% include "nav.html" %}
+<script type="text/javascript">
+	var his_tasks = {{ tasks | tojson }}
+</script>
+
+<div class ="container">
+    <div class="row">
+        <div class="col-md-6">
+          
+			<form class="form-horizontal" ng-submit="savetaskForm()">
+			  <fieldset>
+			    <legend>TASK</legend>
+			    <div class="form-group">
+			      <label for="inputTask" class="col-lg-2 control-label">Task</label>
+			      <div class="col-lg-10">
+			        <input type="text" ng-model="taskModel" name="input_task" class="form-control" id="inputTask" placeholder="Task">
+			      </div>
+			    </div>
+			    <div class="form-group">
+			      <label for="textarea" class="col-lg-2 control-label">Description</label>
+			      <div class="col-lg-10">
+			        <textarea type="description" ng-model="descriptionModel" name="input_description" class="form-control" rows="3" id="description"></textarea>
+			        <span class="help-block">A Short description of task can be written here.</span>
+			      </div>
+			    </div>
+			    <div class="form-group">
+			      <label for="datecreated" class="col-lg-2 control-label">Complete by</label>
+			      <div class="col-lg-10">
+			        <input type="text" ng-model="date_createdModel" name="input_datecreated" class="form-control" id="datecreated" placeholder="Completion date">
+			      </div>
+			    </div>
+			    <div class="form-group">
+			      <label for="priority" class="col-lg-2 control-label">Priority</label>
+			      <div class="col-lg-10">
+			        <input type="text" ng-model="priorityModel" name="input_priority" class="form-control" id="priority" placeholder="Priority">
+			        
+			      </div>
+			    </div>
+			    
+			    
+			        <button type="reset" class="btn btn-default">Cancel</button>
+			        <button type="submit" class="btn btn-primary">Submit</button>
+			      </div>
+			    </div>
+			  </fieldset>
+			</form>
+		</div>
+	</div>
+	<hr>
+	<div class="container">
+
+		<ul class="nav nav-tabs">
+		  <li ng-click="getTasks('all')"><a href="#all" data-toggle="tab" aria-expanded="false">All</a></li>
+		  <li ng-click="getTasks('uncompleted')"><a href="#uncompleted" data-toggle="tab" aria-expanded="true">Uncompleted</a></li>
+		  <li ng-click="getTasks('completed')"><a href="#completed" data-toggle="tab" aria-expanded="true">Completed</a></li>
+		</ul>
+
+
+		<div id="tabContents" class="tab-content">
+			<div class="tab-pane fade" id="all">
+				<div class="row">
+					<div class="col-md-6">
+					<div class="panel panel-info" ng-repeat="task in tasks track by $index">
+						<div class="panel-heading">
+							<h3 class="panel-title">[[$index+1]]. [[task.task]]
+								<span class="pull-right">
+									<i class="fa fa-check text-success" aria-hidden="true" ng-click="markAsFinished(task)"></i>
+									<i class="fa fa-pencil-square text-warning" aria-hidden="true" ng-click="showEdit(task)"></i>
+									<i class="fa fa-trash-o text-danger" ng-click="removetaskForm(task)" aria-hidden="true"></i>
+								</span>
+							</h3>
+						</div>
+						<div class="panel-body">
+							<label>Created on : [[task.date_created]]</label>
+							<label>To be done by: [[task.date_completed]]</label>
+							<p>Content: [[task.description]]</p>
+						</div>
+					</div>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane fade" id="uncompleted">
+				<div class="row">
+					<div class="col-md-6">
+					<div class="panel panel-info" ng-repeat="task in tasks track by $index">
+						<div class="panel-heading">
+							<h3 class="panel-title">[[$index+1]]. [[task.task]]
+								<span class="pull-right">
+									<i class="fa fa-check text-success" aria-hidden="true" ng-click="markAsFinished(task)"></i>
+									<i class="fa fa-pencil-square text-warning" aria-hidden="true" data-target="#editForm" data-toggle="modal"></i>
+									<i class="fa fa-trash-o text-danger" ng-click="removetaskForm(task)" aria-hidden="true"></i>
+								</span>
+							</h3>
+						</div>
+						<div class="panel-body">
+							<label>Created on : [[task.date_created]]</label>
+							<label>To be done by: [[task.date_completed]]</label>
+							<p>Content: [[task.description]]</p>
+						</div>
+					</div>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane fade" id="completed">
+				<div class="row">
+					<div class="col-md-6">
+					<div class="panel panel-info" ng-repeat="task in tasks track by $index">
+						<div class="panel-heading">
+							<h3 class="panel-title">[[$index+1]]. [[task.task]]<span class="pull-right" ng-click="removetaskForm(task)"><i class="fa fa-trash-o text-warning" aria-hidden="true"></i></span></h3>
+						</div>
+						<div class="panel-body">
+							<label>Created on : [[task.date_created]]</label>
+							<label>To be done by: [[task.date_completed]]</label>
+							<p>Content: [[task.description]]</p>
+						</div>
+					</div>
+					</div>
+				</div>
+			</div>
+	</div>
+	</div>
+	<div class="modal fade" id="editForm" role="dialog">
+              <div class="modal-dialog" >
+                <div class="modal-content">
+                  <div class="modal-body">
+                  <form class="form-horizontal" ng-submit="editForm(edit_task)">
+			  <fieldset>
+			    <legend>TASK</legend>
+			    <div class="form-group">
+			      <label for="inputTask" class="col-lg-2 control-label">Task</label>
+			      <div class="col-lg-10">
+			        <input type="text" ng-model="edit_task.task" name="input_task" class="form-control" id="inputTask" placeholder="Task">
+			      </div>
+			    </div>
+			    <div class="form-group">
+			      <label for="textarea" class="col-lg-2 control-label">Description</label>
+			      <div class="col-lg-10">
+			        <textarea type="description" ng-model="edit_task.description" name="input_description" class="form-control" rows="3" id="description"></textarea>
+			        <span class="help-block">A Short description of task can be written here.</span>
+			      </div>
+			    </div>
+			    <div class="form-group">
+			      <label for="datecreated" class="col-lg-2 control-label">Complete by</label>
+			      <div class="col-lg-10">
+			        <input type="text" ng-model="edit_task.date_created" name="input_datecreated" class="form-control" id="datecreated" placeholder="Completion date">
+			      </div>
+			    </div>
+			    <div class="form-group">
+			      <label for="priority" class="col-lg-2 control-label">Priority</label>
+			      <div class="col-lg-10">
+			        <input type="text" ng-model="edit_task.priority" name="input_priority" class="form-control" id="priority" placeholder="Priority">
+			        
+			      </div>
+			    </div>
+			        <button type="submit" class="btn btn-primary">Save</button>
+			      </div>
+			    </div>
+			  </fieldset>
+			</form>
+		</div>
+		</div>
+		</div>
+		</div>
+</body>
+</html>
